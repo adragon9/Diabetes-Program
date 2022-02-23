@@ -1,5 +1,5 @@
 from tkinter import *
-from CorrectionCalculator import correction_calculator
+import CorrectionCalculator as cCalc
 
 
 # submit button function
@@ -22,7 +22,7 @@ def submit():
         warningLabel.grid(row=2, column=0)
         warningLabel.after(5000, warningLabel.destroy)
         print(bsEntry.get())  # debug print used until file writing was set up
-        correction_calculator(int(bsEntry.get()))
+        cCalc.correction_calculator(int(bsEntry.get()))
     else:
         warningLabel['foreground'] = "red"
         warningLabel['text'] = "Entry Invalid"
