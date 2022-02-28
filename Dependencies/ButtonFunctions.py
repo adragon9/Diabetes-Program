@@ -1,8 +1,8 @@
 from tkinter import *
 from os.path import exists
 
-import Windows
-from Calculators import correction_calculator
+from Dependencies import Windows
+from Dependencies.Calculators import correction_calculator
 
 
 # submit button function

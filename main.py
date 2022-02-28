@@ -1,6 +1,6 @@
 from tkinter import mainloop
 
-import Windows
+from Dependencies import Windows
 
 # Main script
 if __name__ == "__main__":

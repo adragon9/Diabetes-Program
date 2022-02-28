@@ -1,6 +1,6 @@
 from tkinter import *
 
-from ButtonFunctions import submit_bs
+from Dependencies.ButtonFunctions import submit_bs
 
 
 class Window1:
