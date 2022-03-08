@@ -1,8 +1,6 @@
-from tkinter import mainloop
+from Dependencies.appWindowConfig import MainWindow
 
-from Dependencies import Windows
 
 # Main script
 if __name__ == "__main__":
-    Windows.window_1_layout()  # calls the window formatting function
-mainloop()
+    MainWindow.root.mainloop()
