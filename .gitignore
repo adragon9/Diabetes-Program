@@ -152,3 +152,4 @@ cython_debug/
 #.idea/
 /Test.txt
 /Settings.dat
+/DiabetesLog.txt
