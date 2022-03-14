@@ -1,18 +1,16 @@
-import tkinter as tk
-import Classes
 import datetime
-
+import tkinter as tk
 from os.path import exists
-from os import getcwd
-from PIL import Image, ImageTk
+
+import Classes
 from Calculators import correction_calculator
 
 
 # Version 2.0
-# Last revision 3/10/2022
+# Last revision 3/14/2022
+global subSideImage
 
 
-# noinspection PyGlobalUndefined
 def setting_window():
     # Sets up a settings file that stores blood sugar target and correction factor for correction calculation
     def setting_submit():
@@ -41,20 +39,17 @@ def setting_window():
     window.geometry("1200x720")
     window.title("Settings")
     window.grab_set()
+    global subSideImage
+    # Same deal as the images in the main code
+        # settingsImage = Image.open("Resources\\download (2).png")
+        # resizedSettingsImage = settingsImage.resize((360, 1200))
+        # settingsImage = ImageTk.PhotoImage(resizedSettingsImage)
 
-    global settingsImage
-    # Side image set up
-    try:
-        settingsImage = Image.open("{}\\Resources\\download (2).png".format(getcwd()))
-        settingsImage = settingsImage.resize((360, 1200))
-        settingsImage = ImageTk.PhotoImage(settingsImage)
-
-        # Image setup
-        settingsImageLabel = tk.Label(window, text="Sub Window Side Banner", image=settingsImage)
-        settingsImageLabel.grid(rowspan=30, column=0)
-    except FileNotFoundError:
-        settingsImageLabel = tk.Label(window, text="Sub Window Side Banner")
-        settingsImageLabel.grid(rowspan=30, column=0)
+    # Image setup
+    subSideImage = tk.PhotoImage(file="Resources\\download (4).png")
+    subCanvas = tk.Canvas(window, width=360, height=1200)
+    subCanvas.grid(row=0, column=0, rowspan=100)
+    subCanvas.create_image(0, 0, anchor='nw', image=subSideImage)
 
     # Window column configuration
     window.columnconfigure(1, weight=1)
@@ -227,27 +222,26 @@ def submit():
 
 # Main
 if __name__ == "__main__":
+    root = tk.Tk()
+    root.geometry("1200x720")
+    root.title("Logbook")
+
     # creates the settings file if it doesn't exist
     if not exists("Settings.dat"):
         with open("Settings.dat", 'w') as settings:
             settings.write("120\n20")
 
-    root = tk.Tk()
-    root.geometry("1200x720")
-    root.title("Logbook")
-
-    # Attempts to load image if the image is not found it loads text
-    try:
-        sideImage = Image.open("{}\\Resources\\download.png".format(getcwd()))
-        sideImage = sideImage.resize((360, 1200))
-        sideImage = ImageTk.PhotoImage(sideImage)
-
-        # Image setup
-        imageLabel = tk.Label(root, text="Main Window Side Banner", image=sideImage)
-        imageLabel.grid(rowspan=30, column=0)
-    except FileNotFoundError:
-        imageLabel = tk.Label(root, text="Main Window Side Banner")
-        imageLabel.grid(rowspan=30, column=0)
+    # Pillow Library broke the code, so I had to go with a less preferable method
+    # Keeping this as a reminder to fix it if I ever revisit this project
+        # Attempts to load image if the image is not found it loads text
+        # sideImage = Image.open("Resources\\mainWindow.png")
+        # resizedSideImage = sideImage.resize((360, 1200))
+        # sideImage = ImageTk.PhotoImage(sideImage)
+    # Image setup
+    sideImage = tk.PhotoImage(file="Resources/download2.png")
+    mainCanvas = tk.Canvas(root, width=360, height=1200)
+    mainCanvas.grid(row=0, column=0, rowspan=100)
+    mainCanvas.create_image(0, 0, anchor='nw', image=sideImage)
 
     # Column Configuration
     root.grid_columnconfigure(1, weight=1)
