@@ -19,19 +19,23 @@ def setting_window():
         target = targetBS.get_box()
         cfactor = correctionFactor.get_box()
 
-        target = letter_scrub(target)
-        cfactor = letter_scrub(cfactor)
+        target = letter_scrub(target.get())
+        cfactor = letter_scrub(cfactor.get())
 
+        settingsValues = [target, cfactor]
+        print(settingsValues)
         # if there is no value, the target is set to 120 and the correction factor is set to 20
-        if target is None:
-            target = 120
-        if cfactor is None:
-            cfactor = 20
+        for i in range(len(settingsValues)):
+            if settingsValues[i] is None or settingsValues[i] == '':
+                if i == 0:
+                    settingsValues[i] = 120
+                else:
+                    settingsValues[i] = 20
 
         # Writes to a setting file
         with open('Settings.dat', 'w') as file:
-            file.write("{}\n".format(target))
-            file.write("{}\n".format(cfactor))
+            for i in range(len(settingsValues)):
+                file.write("{}\n".format(settingsValues[i]))
 
     window = tk.Toplevel(root)
     window.geometry("1200x720")
@@ -40,40 +44,51 @@ def setting_window():
 
     global settingsImage
     # Side image set up
-    settingsImage = Image.open("{}\\Resources\\download (2).png".format(getcwd()))
-    settingsImage = settingsImage.resize((360, 1200))
-    settingsImage = ImageTk.PhotoImage(settingsImage)
+    try:
+        settingsImage = Image.open("{}\\Resources\\download (2).png".format(getcwd()))
+        settingsImage = settingsImage.resize((360, 1200))
+        settingsImage = ImageTk.PhotoImage(settingsImage)
 
-    # Image setup
-    settingsImageLabel = tk.Label(window, image=settingsImage)
-    settingsImageLabel.grid(rowspan=30, column=0)
+        # Image setup
+        settingsImageLabel = tk.Label(window, text="Sub Window Side Banner", image=settingsImage)
+        settingsImageLabel.grid(rowspan=30, column=0)
+    except FileNotFoundError:
+        settingsImageLabel = tk.Label(window, text="Sub Window Side Banner")
+        settingsImageLabel.grid(rowspan=30, column=0)
 
     # Window column configuration
-    window.columnconfigure(0)
-    window.columnconfigure(3, weight=1)
+    window.columnconfigure(1, weight=1)
+    window.columnconfigure(5, weight=2)
 
     # Window row configuration
-    window.rowconfigure(0, weight=1)
-    window.rowconfigure(3, weight=1)
+    window.rowconfigure(0, weight=40)
+    window.rowconfigure(5, weight=40)
+    window.rowconfigure(6, weight=1)
     # Create Labels
     targetLabel = tk.Label(window, text="Target Blood Sugar", font=("Times New Roman", 12), width=15, justify='right',
                            anchor="e")
     correctionFactorLabel = tk.Label(window, text="Correction Factor", font=("Times New Roman", 12), width=15,
                                      justify='right', anchor="e")
+    subHeaderLabel = tk.Label(window, text="Settings", font=("Times New Roman", 36), width=15, anchor='w', pady=10)
 
-    targetLabel.grid(row=1, column=1)
-    correctionFactorLabel.grid(row=2, column=1)
+    targetLabel.grid(row=2, column=2)
+    correctionFactorLabel.grid(row=3, column=2)
+    subHeaderLabel.grid(row=1, column=2, columnspan=10, sticky='w')
 
     # Create entry boxes
-    targetBS = Classes.EntryBox(window, 30, 1, 2)
-    correctionFactor = Classes.EntryBox(window, 30, 2, 2)
+    targetBS = Classes.EntryBox(window, 30, 2, 3)
+    correctionFactor = Classes.EntryBox(window, 30, 3, 3)
     targetBS.initialize_box()
     correctionFactor.initialize_box()
 
-    subButton = Classes.CustButton(window, "Submit >", 12, 4, 4, setting_submit, padx=5, pady=5)
+    # Create buttons
+    closeSubWindow = Classes.CustButton(window, "[X] Close", 12, 6, 6, window.destroy, padx=25)
+    subButton = Classes.CustButton(window, "Submit >", 12, 4, 3, setting_submit)
+    closeSubWindow.initialize_button()
     subButton.initialize_button()
 
 
+# Cleans non-numeric characters from strings
 def letter_scrub(text):
     index = 0
     for i in text:
@@ -88,6 +103,7 @@ def letter_scrub(text):
     return text  # returns the scrubbed text
 
 
+# Used for checking whether a number is negative
 def neg_scrub(text):
     if int(text) < 0:
         return True
@@ -95,6 +111,7 @@ def neg_scrub(text):
         return False
 
 
+# Used to report which entry field is wrong for the user
 def get_entry_name(index):
     if index == 0:
         return "Blood Sugar Entry"
@@ -108,32 +125,26 @@ def get_entry_name(index):
 
 # submit button function
 def submit():
-    # Filters out anything that is not a number
+    # Variable prep
     bsEntry = bsBox.get_box()
     mealEntry = mealBox.get_box()
     doseEntry = doseBox.get_box()
-    cleanBsEntry = ""
-    cleanMealEntry = ""
-    cleanDoseEntry = ""
+    correction = ''
     # places the entry box data into a list for convenience
     entryBoxData = [bsEntry, mealEntry, doseEntry]
+    cleanEntryBoxData = ["", "", ""]
+
     # ensures letter_scrub doesn't run without input
-    if bsEntry is not None:
-        # wanted to preserve the raw entry box data so that I could manipulate the entry box
-        cleanBsEntry = letter_scrub(entryBoxData[0].get())
+    # Also preserves the raw entry box data for later use
 
-    if mealEntry is not None:
-        cleanMealEntry = letter_scrub(entryBoxData[1].get())
-
-    if doseEntry is not None:
-        cleanDoseEntry = letter_scrub(entryBoxData[2].get())
+    for i in range(0, len(cleanEntryBoxData)):
+        if entryBoxData[i] is not None:
+            cleanEntryBoxData[i] = letter_scrub(entryBoxData[i].get())
 
     # makes sure that blank entries are entered as 0
-    if cleanMealEntry == '':
-        cleanMealEntry = "0"
-
-    if cleanDoseEntry == '':
-        cleanDoseEntry = "0"
+    for i in range(1, len(cleanEntryBoxData)):
+        if cleanEntryBoxData[i] == '':
+            cleanEntryBoxData[i] = "0"
 
     # No reason to read anything higher than 3 digits as that would mean you are in the hospital
     # Gives confirmation of success and lets the user know if the input is wrong
@@ -154,17 +165,16 @@ def submit():
             # print(index2) -- debug print
             index += 1
 
-    correction = correction_calculator(int(cleanBsEntry), target=int(setting_value[0]),
-                                       correction_factor=int(setting_value[1]))
-
     index = 0
-    if cleanBsEntry != '':
+    if cleanEntryBoxData[0] != '':
+        correction = correction_calculator(int(cleanEntryBoxData[0]), target=int(setting_value[0]),
+                                           correction_factor=int(setting_value[1]))
         for i in entryBoxData:
             # print(i) -- debug print
-            if len(i.get()) > 4:
+            if len(i.get()) > 3 or neg_scrub(cleanEntryBoxData[index]) is True:
                 invalidEntry = True
                 warningLabel.config(foreground='red')
-                warningText.set("Error {} is invalid; detected in {}".format(i.get(), get_entry_name(index)))
+                warningText.set("{} is invalid; error detected in: {}".format(i.get(), get_entry_name(index)))
                 i.delete(0, len(i.get()))
                 # print("Value out of range") -- debug print
                 break
@@ -172,14 +182,14 @@ def submit():
                 invalidEntry = False
                 warningLabel.config(foreground='green')
                 warningText.set("Submitted")
-                # print(cleanBsEntry) -- debug print
+                # print(cleanEntryBoxData[0) -- debug print
                 correctionLabel.config(relief='groove', padx=10, pady=10, background="#EEEE9B")
                 correctionText.set("Your correction is: {}".format(correction))
             index += 1
     else:
         invalidEntry = True
         warningLabel.config(foreground='red')
-        warningText.set("Error no Blood Sugar entered.")
+        warningText.set("Error: no blood sugar entered.")
         entryBoxData[0].delete(0, len(entryBoxData[0].get()))
         # print("Value out of range") -- debug print
 
@@ -202,16 +212,16 @@ def submit():
                               "Dose" + char * (30 - len("Dose")) +
                               "Correction\n" +
                               "{}".format(timeStamp) + char * (30 - len(timeStamp)) +
-                              "{}".format(cleanBsEntry) + char * (30 - len(cleanBsEntry)) +
-                              "{}".format(cleanMealEntry) + char * (30 - len(cleanMealEntry)) +
-                              "{}".format(cleanDoseEntry) + char * (30 - len(cleanDoseEntry)) +
+                              "{}".format(cleanEntryBoxData[0]) + char * (30 - len(cleanEntryBoxData[0])) +
+                              "{}".format(cleanEntryBoxData[1]) + char * (30 - len(cleanEntryBoxData[1])) +
+                              "{}".format(cleanEntryBoxData[2]) + char * (30 - len(cleanEntryBoxData[2])) +
                               "{}\n".format(correction))
         else:
             with open(fileName, 'a') as logFile:
                 logFile.write("{}".format(timeStamp) + char * (30 - len(timeStamp)) +
-                              "{}".format(cleanBsEntry) + char * (30 - len(cleanBsEntry)) +
-                              "{}".format(cleanMealEntry) + char * (30 - len(cleanMealEntry)) +
-                              "{}".format(cleanDoseEntry) + char * (30 - len(cleanDoseEntry)) +
+                              "{}".format(cleanEntryBoxData[0]) + char * (30 - len(cleanEntryBoxData[0])) +
+                              "{}".format(cleanEntryBoxData[1]) + char * (30 - len(cleanEntryBoxData[1])) +
+                              "{}".format(cleanEntryBoxData[2]) + char * (30 - len(cleanEntryBoxData[2])) +
                               "{}\n".format(correction))  # file formatting
 
 
@@ -226,22 +236,27 @@ if __name__ == "__main__":
     root.geometry("1200x720")
     root.title("Logbook")
 
-    sideImage = Image.open("{}\\Resources\\download.png".format(getcwd()))
-    sideImage = sideImage.resize((360, 1200))
-    sideImage = ImageTk.PhotoImage(sideImage)
+    # Attempts to load image if the image is not found it loads text
+    try:
+        sideImage = Image.open("{}\\Resources\\download.png".format(getcwd()))
+        sideImage = sideImage.resize((360, 1200))
+        sideImage = ImageTk.PhotoImage(sideImage)
 
-    # Image setup
-    imageLabel = tk.Label(root, image=sideImage)
-    imageLabel.grid(rowspan=30, column=0)
+        # Image setup
+        imageLabel = tk.Label(root, text="Main Window Side Banner", image=sideImage)
+        imageLabel.grid(rowspan=30, column=0)
+    except FileNotFoundError:
+        imageLabel = tk.Label(root, text="Main Window Side Banner")
+        imageLabel.grid(rowspan=30, column=0)
 
     # Column Configuration
-    root.grid_columnconfigure(0)
     root.grid_columnconfigure(1, weight=1)
-    root.grid_columnconfigure(4, weight=3)
+    root.grid_columnconfigure(5, weight=3)
 
     # Row Configuration
-    root.grid_rowconfigure(0, weight=1)
-    root.grid_rowconfigure(6, weight=1)
+    root.grid_rowconfigure(0, weight=20)
+    root.grid_rowconfigure(8, weight=30)
+    root.grid_rowconfigure(10, weight=1)
 
     # Label Vars
     warningText = tk.StringVar()
@@ -255,23 +270,26 @@ if __name__ == "__main__":
     mealLabel = tk.Label(root, text="Meal Carbs", font=("Times New Roman", 12), width=15, justify='right', anchor="e")
     doseLabel = tk.Label(root, text="Dose", font=("Times New Roman", 12), width=15, justify='right', anchor="e")
 
-    warningLabel.grid(row=4, column=2, columnspan=2)
-    correctionLabel.grid(row=5, column=2, columnspan=2)
-    headerLabel.grid(row=0, column=1, columnspan=10, sticky='w')
-    bsLabel.grid(row=1, column=2)
-    mealLabel.grid(row=2, column=2)
-    doseLabel.grid(row=3, column=2)
+    warningLabel.grid(row=6, column=3)
+    correctionLabel.grid(row=7, column=3)
+    headerLabel.grid(row=1, column=2, columnspan=10, sticky='w')
+    bsLabel.grid(row=2, column=2)
+    mealLabel.grid(row=3, column=2)
+    doseLabel.grid(row=4, column=2)
 
     # Created boxes as classes to collect and use their data elsewhere as needed
-    bsBox = Classes.EntryBox(root, 30, 1, 3)
-    mealBox = Classes.EntryBox(root, 30, 2, 3)
-    doseBox = Classes.EntryBox(root, 30, 3, 3)
+    bsBox = Classes.EntryBox(root, 30, 2, 3)
+    mealBox = Classes.EntryBox(root, 30, 3, 3)
+    doseBox = Classes.EntryBox(root, 30, 4, 3)
     bsBox.initialize_box()
     mealBox.initialize_box()
     doseBox.initialize_box()
 
-    submit = Classes.CustButton(root, "Submit >", 12, 8, 5, submit, padx=50, pady=25)
-    settings = Classes.CustButton(root, "Settings", 12, 7, 5, setting_window, padx=50)
+    # Button setup
+    closeWindow = Classes.CustButton(root, "[X] Close", 12, 10, 6, root.destroy, padx=25)
+    submit = Classes.CustButton(root, "Submit >", 12, 5, 3, submit)
+    settings = Classes.CustButton(root, "Settings", 12, 10, 3, setting_window)
+    closeWindow.initialize_button()
     submit.initialize_button()
     settings.initialize_button()
 
