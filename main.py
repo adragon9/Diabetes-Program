@@ -5,10 +5,32 @@ from os.path import exists
 import Classes
 from Calculators import correction_calculator
 
-
 # Version 2.0
 # Last revision 3/14/2022
 global subSideImage
+
+
+# Cleans non-numeric characters from strings
+def letter_scrub(text):
+    index = 0
+    for i in text:
+        if index == 0 and i == '-':
+            continue
+        else:
+            if not i.isnumeric():
+                text = text.replace(i, '')
+            else:
+                # print("--> n") # Debug print
+                index += 1
+    return text  # returns the scrubbed text
+
+
+# Used for checking whether a number is negative
+def neg_scrub(text):
+    if int(text) < 0:
+        return True
+    else:
+        return False
 
 
 def setting_window():
@@ -24,7 +46,7 @@ def setting_window():
         print(settingsValues)
         # if there is no value, the target is set to 120 and the correction factor is set to 20
         for i in range(len(settingsValues)):
-            if settingsValues[i] is None or settingsValues[i] == '':
+            if settingsValues[i] is None or settingsValues[i] == '' or neg_scrub(settingsValues[i]) is True:
                 if i == 0:
                     settingsValues[i] = 120
                 else:
@@ -41,9 +63,9 @@ def setting_window():
     window.grab_set()
     global subSideImage
     # Same deal as the images in the main code
-        # settingsImage = Image.open("Resources\\download (2).png")
-        # resizedSettingsImage = settingsImage.resize((360, 1200))
-        # settingsImage = ImageTk.PhotoImage(resizedSettingsImage)
+    # settingsImage = Image.open("Resources\\download (2).png")
+    # resizedSettingsImage = settingsImage.resize((360, 1200))
+    # settingsImage = ImageTk.PhotoImage(resizedSettingsImage)
 
     # Image setup
     subSideImage = tk.PhotoImage(file="Resources\\download (4).png")
@@ -81,29 +103,6 @@ def setting_window():
     subButton = Classes.CustButton(window, "Submit >", 12, 4, 3, setting_submit)
     closeSubWindow.initialize_button()
     subButton.initialize_button()
-
-
-# Cleans non-numeric characters from strings
-def letter_scrub(text):
-    index = 0
-    for i in text:
-        if index == 0 and i == '-':
-            continue
-        else:
-            if not i.isnumeric():
-                text = text.replace(i, '')
-            else:
-                # print("--> n") # Debug print
-                index += 1
-    return text  # returns the scrubbed text
-
-
-# Used for checking whether a number is negative
-def neg_scrub(text):
-    if int(text) < 0:
-        return True
-    else:
-        return False
 
 
 # Used to report which entry field is wrong for the user
@@ -233,10 +232,10 @@ if __name__ == "__main__":
 
     # Pillow Library broke the code, so I had to go with a less preferable method
     # Keeping this as a reminder to fix it if I ever revisit this project
-        # Attempts to load image if the image is not found it loads text
-        # sideImage = Image.open("Resources\\mainWindow.png")
-        # resizedSideImage = sideImage.resize((360, 1200))
-        # sideImage = ImageTk.PhotoImage(sideImage)
+    # Attempts to load image if the image is not found it loads text
+    # sideImage = Image.open("Resources\\mainWindow.png")
+    # resizedSideImage = sideImage.resize((360, 1200))
+    # sideImage = ImageTk.PhotoImage(sideImage)
     # Image setup
     sideImage = tk.PhotoImage(file="Resources/download2.png")
     mainCanvas = tk.Canvas(root, width=360, height=1200)
