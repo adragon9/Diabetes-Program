@@ -192,7 +192,7 @@ def submit():
     fileName = "DiabetesLog.txt"
     char = " "  # variable used for spacing in the txt file
     currentTime = datetime.datetime.now()
-    timeStamp = currentTime.strftime("%m/%d/%Y %H:%M:%S %p")
+    timeStamp = currentTime.strftime("%m/%d/%Y %I:%M:%S %p")
     # Does not write invalid entries to file
 
     if invalidEntry is False:
