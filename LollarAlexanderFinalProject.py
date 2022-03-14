@@ -7,18 +7,18 @@ from Calculators import correction_calculator
 
 # Version 2.0
 # Last revision 3/14/2022
-global subSideImage
+global subSideImage # required so the image would appear in the sub window
 
 
 # Cleans non-numeric characters from strings
 def letter_scrub(text):
-    index = 0
+    index = 0  # an index to check which digit the loop is on
     for i in text:
         if index == 0 and i == '-':
             continue
         else:
             if not i.isnumeric():
-                text = text.replace(i, '')
+                text = text.replace(i, '')  # Removes characters from the entry
             else:
                 # print("--> n") # Debug print
                 index += 1
@@ -36,13 +36,13 @@ def neg_scrub(text):
 def setting_window():
     # Sets up a settings file that stores blood sugar target and correction factor for correction calculation
     def setting_submit():
-        target = targetBS.get_box()
-        cfactor = correctionFactor.get_box()
+        target = targetBS.get_box()  # The target blood sugar
+        cfactor = correctionFactor.get_box()  # Correction factor
 
         target = letter_scrub(target.get())
         cfactor = letter_scrub(cfactor.get())
 
-        settingsValues = [target, cfactor]
+        settingsValues = [target, cfactor]  # an array containing all the settings values
         print(settingsValues)
         # if there is no value, the target is set to 120 and the correction factor is set to 20
         for i in range(len(settingsValues)):
@@ -57,7 +57,7 @@ def setting_window():
             for i in range(len(settingsValues)):
                 file.write("{}\n".format(settingsValues[i]))
 
-    window = tk.Toplevel(root)
+    window = tk.Toplevel(root)  # Sub window reference
     window.geometry("1200x720")
     window.title("Settings")
     window.grab_set()
@@ -68,8 +68,8 @@ def setting_window():
     # settingsImage = ImageTk.PhotoImage(resizedSettingsImage)
 
     # Image setup
-    subSideImage = tk.PhotoImage(file="Resources\\download (4).png")
-    subCanvas = tk.Canvas(window, width=360, height=1200)
+    subSideImage = tk.PhotoImage(file="Resources\\download (4).png")  # Image on the side of the window
+    subCanvas = tk.Canvas(window, width=360, height=1200)  # The canvas the image is displayed on
     subCanvas.grid(row=0, column=0, rowspan=100)
     subCanvas.create_image(0, 0, anchor='nw', image=subSideImage)
 
@@ -81,7 +81,7 @@ def setting_window():
     window.rowconfigure(0, weight=40)
     window.rowconfigure(5, weight=40)
     window.rowconfigure(6, weight=1)
-    # Create Labels
+    # Create Labels for the entry boxes, included are Target and Correction factor labels
     targetLabel = tk.Label(window, text="Target Blood Sugar", font=("Times New Roman", 12), width=15, justify='right',
                            anchor="e")
     correctionFactorLabel = tk.Label(window, text="Correction Factor", font=("Times New Roman", 12), width=15,
@@ -120,17 +120,16 @@ def get_entry_name(index):
 # submit button function
 def submit():
     # Variable prep
-    bsEntry = bsBox.get_box()
-    mealEntry = mealBox.get_box()
-    doseEntry = doseBox.get_box()
-    correction = ''
+    bsEntry = bsBox.get_box()  # The text data from the blood sugar entry box
+    mealEntry = mealBox.get_box()  # The text data from the meal carbs entry box
+    doseEntry = doseBox.get_box()  # The text data from the dose entry box
+    correction = ''  # declaration of the correction, will be calculated later
     # places the entry box data into a list for convenience
     entryBoxData = [bsEntry, mealEntry, doseEntry]
     cleanEntryBoxData = ["", "", ""]
 
     # ensures letter_scrub doesn't run without input
     # Also preserves the raw entry box data for later use
-
     for i in range(0, len(cleanEntryBoxData)):
         if entryBoxData[i] is not None:
             cleanEntryBoxData[i] = letter_scrub(entryBoxData[i].get())
@@ -188,9 +187,9 @@ def submit():
         # print("Value out of range") -- debug print
 
     # Writes to the file
-    fileName = "DiabetesLog.txt"
+    fileName = "DiabetesLog.txt"  # the name of the file the logs are saved to
     char = " "  # variable used for spacing in the txt file
-    currentTime = datetime.datetime.now()
+    currentTime = datetime.datetime.now()  # the current time
     timeStamp = currentTime.strftime("%m/%d/%Y %I:%M:%S %p")
     # Does not write invalid entries to file
 
@@ -221,7 +220,7 @@ def submit():
 
 # Main
 if __name__ == "__main__":
-    root = tk.Tk()
+    root = tk.Tk()  # Main window reference
     root.geometry("1200x720")
     root.title("Logbook")
 
@@ -237,8 +236,8 @@ if __name__ == "__main__":
     # resizedSideImage = sideImage.resize((360, 1200))
     # sideImage = ImageTk.PhotoImage(sideImage)
     # Image setup
-    sideImage = tk.PhotoImage(file="Resources/download2.png")
-    mainCanvas = tk.Canvas(root, width=360, height=1200)
+    sideImage = tk.PhotoImage(file="Resources/download2.png")  # image on the side of the main window
+    mainCanvas = tk.Canvas(root, width=360, height=1200)  # the canvas the side image is displayed on
     mainCanvas.grid(row=0, column=0, rowspan=100)
     mainCanvas.create_image(0, 0, anchor='nw', image=sideImage)
 
@@ -252,8 +251,8 @@ if __name__ == "__main__":
     root.grid_rowconfigure(10, weight=1)
 
     # Label Vars
-    warningText = tk.StringVar()
-    correctionText = tk.StringVar()
+    warningText = tk.StringVar()  # Necessary so that it can give dynamic warnings
+    correctionText = tk.StringVar()  # Necessary so that the correction can be displayed dynamically
 
     # Labels setup
     warningLabel = tk.Label(root, textvariable=warningText, anchor='center')
