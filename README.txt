@@ -1,11 +1,11 @@
 # Final Project INFM 140
 # Diabetic Logbook
----------------------------------------
 
-- Description:
-  - This program is intended to make logging the blood sugar, carbs in a meal(if applicable), and the dose(if applicable), of someone with diabetes simpler.
-  - It now also gives the correction as well as dates and times the entries.
-
+<h2>Description</h2>
+  <ul>
+  <li>This program is intended to make logging the blood sugar, carbs in a meal(if applicable), and the dose(if applicable), of someone with diabetes simpler.</li>
+  <li>It now also gives the correction as well as dates and times the entries.</li>
+  </ul>
 ---------------------------------------
 # Features
 ---------------------------------------
